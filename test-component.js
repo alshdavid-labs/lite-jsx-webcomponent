@@ -36,6 +36,7 @@ class TestComponent extends Component {
             this.setState(this.state)
         }
 
+        // This needs to fire after the state has been initialised within the component
         // Haven't found a way to add this to the end of the constructor yet
         this.renderComponent()
     }    
