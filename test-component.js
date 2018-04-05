@@ -18,14 +18,6 @@ class Component extends HTMLElement {
         this.state = update
     }
 
-    bindListeners() {
-        this.querySelectorAll('[onclick]').forEach(element => element.onclick = event => eval(element.attributes.onclick.value)(event))
-        this.querySelectorAll('[oninput]').forEach(element => element.oninput = event => eval(element.attributes.oninput.value)(event))
-        this.querySelectorAll('[onblur]').forEach(element => element.onblur = event => eval(element.attributes.onblur.value)(event))
-        this.querySelectorAll('[onchange]').forEach(element => element.onchange = event => eval(element.attributes.onchange.value)(event))
-        // etc
-    }
-
     renderComponent() {
         try {
             // Trying to get the last focuesed element to refocus on it after render
@@ -36,7 +28,11 @@ class Component extends HTMLElement {
             this.innerHTML = this.render()
 
             // Bind listeners to new HTML
-            this.bindListeners()
+            this.querySelectorAll('[onclick]').forEach(element => element.onclick = event => eval(element.attributes.onclick.value)(event))
+            this.querySelectorAll('[oninput]').forEach(element => element.oninput = event => eval(element.attributes.oninput.value)(event))
+            this.querySelectorAll('[onblur]').forEach(element => element.onblur = event => eval(element.attributes.onblur.value)(event))
+            this.querySelectorAll('[onchange]').forEach(element => element.onchange = event => eval(element.attributes.onchange.value)(event))
+            // etc
 
             // Add element references, trying to use this to refocus on input element when typed on
             this.querySelectorAll('*').forEach((element, index) => element.setAttribute('ref', index.toString()))
