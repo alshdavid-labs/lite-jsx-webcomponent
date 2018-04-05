@@ -46,17 +46,17 @@ class TestComponent extends Component {
             myList: [1, 2, 3, 4, 5],
             input: ''
         })
-        
-        this.addItem = () => {
-            this.state.myList.push(this.state.myList.length + 1)
-            this.setState(this.state)
-        }
+    }   
+    
+    addItem() {
+        this.state.myList.push(this.state.myList.length + 1)
+        this.setState(this.state)
+    }
 
-        this.updateText = (value) => {
-            this.state.input = value
-            this.setState(this.state)
-        }
-    }    
+    updateText(value) {
+        this.state.input = value
+        this.setState(this.state)
+    }
 
     render() {
         return `
