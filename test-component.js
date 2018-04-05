@@ -15,7 +15,6 @@ class Component extends HTMLElement {
     renderComponent() {
         try {
             const focusedElementRef = document.activeElement.attributes.ref && document.activeElement.attributes.ref.value
-            
             this.innerHTML = this.render()
             this.bindListeners()
             this.querySelectorAll('*')
