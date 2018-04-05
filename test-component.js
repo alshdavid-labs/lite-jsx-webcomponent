@@ -5,12 +5,26 @@ class Component extends HTMLElement {
     }
 
     bindListeners() {
-        this.querySelectorAll('[onclick]').forEach(element => element.onclick = () => eval(element.attributes.onclick.value)())
+        this.querySelectorAll('[onclick]').forEach(element => element.onclick = event => eval(element.attributes.onclick.value)(event))
+        this.querySelectorAll('[oninput]').forEach(element => element.oninput = event => eval(element.attributes.oninput.value)(event))
+        this.querySelectorAll('[onblur]').forEach(element => element.onblur = event => eval(element.attributes.onblur.value)(event))
+        this.querySelectorAll('[onchange]').forEach(element => element.onchange = event => eval(element.attributes.onchange.value)(event))
+        // etc
     }
 
     renderComponent() {
-        this.innerHTML = this.render()
-        this.bindListeners()
+        try {
+            const focusedElementRef = document.activeElement.attributes.ref && document.activeElement.attributes.ref.value
+            
+            this.innerHTML = this.render()
+            this.bindListeners()
+            this.querySelectorAll('*')
+                .forEach((element, index) => element.setAttribute('ref', index.toString()))
+            this.querySelector(`[ref="${focusedElementRef}"]`).focus()
+            
+        } catch (error) {
+            return 
+        }        
     }
 
     setState(value) {
@@ -19,38 +33,41 @@ class Component extends HTMLElement {
     }
 }
 
-
-
-
-
 class TestComponent extends Component {
     constructor() {
         super()
         
-        this.state = {
-            myList: [1, 2, 3, 4, 5]
-        }
+        this.setState({
+            myList: [1, 2, 3, 4, 5],
+            input: ''
+        })
         
         this.addItem = () => {
             this.state.myList.push(this.state.myList.length + 1)
             this.setState(this.state)
         }
 
-        // This needs to fire after the state has been initialised within the component
-        // Haven't found a way to add this to the end of the constructor yet
-        this.renderComponent()
+        this.updateText = (value) => {
+            this.state.input = value
+            this.setState(this.state)
+        }
     }    
 
     render() {
         return `
             <div>
-                <button onclick="${() => this.addItem()}">Add Item</button>
+                <button 
+                    onclick="${() => this.addItem()}"
+                    >Add Item
+                </button>
                 <ul>
-                    ${
-                        this.state.myList
-                            .map(item => `<li>${item}</li>`).join('')
-                    }
+                    ${ this.state.myList && this.state.myList
+                            .map(item => `<li>${item}</li>`).join('') }
                 </ul>
+                <input 
+                    value="${this.state.input}" 
+                    oninput="${event => this.updateText(event.target.value)}"
+                />
             </div>
         `              
     }
