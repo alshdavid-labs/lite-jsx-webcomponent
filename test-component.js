@@ -14,13 +14,19 @@ class Component extends HTMLElement {
 
     renderComponent() {
         try {
+            // Trying to get the last focuesed element to refocus on it after render
             const focusedElementRef = document.activeElement.attributes.ref && document.activeElement.attributes.ref.value
-            this.innerHTML = this.render()
-            this.bindListeners()
-            this.querySelectorAll('*')
-                .forEach((element, index) => element.setAttribute('ref', index.toString()))
-            this.querySelector(`[ref="${focusedElementRef}"]`).focus()
             
+            // Rerender html
+            this.innerHTML = null
+            this.innerHTML = this.render()
+
+            // Bind listeners to new HTML
+            this.bindListeners()
+
+            // Add element references, trying to use this to refocus on input element when typed on
+            this.querySelectorAll('*').forEach((element, index) => element.setAttribute('ref', index.toString()))
+            this.querySelector(`[ref="${focusedElementRef}"]`).focus()
         } catch (error) {
             return 
         }        
