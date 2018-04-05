@@ -1,4 +1,4 @@
-// Simple base clase that holds rendering logic
+// Simple base class that holds rendering logic
 class Component extends HTMLElement {
     constructor() {
         super()
