@@ -2,7 +2,16 @@
 class Component extends HTMLElement {
     constructor() {
         super()
-        this.state = {}
+        this.innerState = {}
+    }
+
+    get state() {
+        return this.innerState
+    }
+
+    set state(value) {
+        this.innerState = value
+        this.renderComponent()
     }
 
     bindListeners() {
@@ -32,33 +41,25 @@ class Component extends HTMLElement {
             return 
         }        
     }
-
-    setState(value) {
-        this.state = value
-        this.renderComponent()
-    }
 }
-
 
 // Actual web componet
 class TestComponent extends Component {
     constructor() {
         super()
         
-        this.setState({
-            myList: [1, 2, 3, 4, 5],
+        this.state = ({
+            myList: [0, 1, 2],
             input: ''
         })
     }   
     
     addItem() {
-        this.state.myList.push(this.state.myList.length + 1)
-        this.setState(this.state)
+        this.state = { ...this.state, ...{ mylist: this.state.myList.push(this.state.myList.length) } }
     }
 
     updateText(value) {
-        this.state.input = value
-        this.setState(this.state)
+        this.state = { ...this.state, ...{ input: value } }
     }
 
     render() {
