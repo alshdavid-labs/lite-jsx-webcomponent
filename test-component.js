@@ -1,3 +1,4 @@
+// Simple base clase that holds rendering logic
 class Component extends HTMLElement {
     constructor() {
         super()
@@ -38,6 +39,8 @@ class Component extends HTMLElement {
     }
 }
 
+
+// Actual web componet
 class TestComponent extends Component {
     constructor() {
         super()
