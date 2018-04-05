@@ -2,7 +2,7 @@
 class Component extends HTMLElement {
     constructor() {
         super()
-        this.innerState = {}
+        this.innerState
     }
 
     get state() {
