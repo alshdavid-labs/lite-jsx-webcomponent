@@ -13,6 +13,10 @@ class Component extends HTMLElement {
         this.innerState = value
         this.renderComponent()
     }
+    
+    setState(update) {
+        this.state = update
+    }
 
     bindListeners() {
         this.querySelectorAll('[onclick]').forEach(element => element.onclick = event => eval(element.attributes.onclick.value)(event))
