@@ -29,8 +29,11 @@ class TestComponent extends Component {
                 >Add Item
             </button>
             <ul>
-                ${ this.state.myList && this.state.myList
-                        .map(item => `<li>${item}</li>`).join('') }
+                ${ 
+                    this.state.myList && this.state.myList
+                        .map(item => `<li>${item}</li>`)
+                        .join('') 
+                }
             </ul>
             <input 
                 value="${this.state.input}" 
