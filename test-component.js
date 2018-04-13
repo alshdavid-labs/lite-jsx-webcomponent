@@ -1,4 +1,3 @@
-// Actual web componet
 class TestComponent extends Component {
     constructor() {
         super()
@@ -22,6 +21,23 @@ class TestComponent extends Component {
         this.state = { ...this.state, ...{ textarea: value } }
     }
 
+    styles() {
+        return `
+            :host {
+                display: block;
+            }
+
+            button {
+                border-radius: 4px;
+            }
+
+            textarea {
+                height: 500px; 
+                width: 500px;
+            }
+        `
+    }
+
     render() {
         return `
             <button 
@@ -41,7 +57,6 @@ class TestComponent extends Component {
             />
             <br>
             <textarea 
-                style="height: 500px; width: 500px"
                 oninput="${event => this.updateTextarea(event.target.value)}"
                 value="${this.state.textarea}"
             ></textarea>

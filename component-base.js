@@ -1,9 +1,66 @@
+function cssScoper(css, prefix) {
+    var re = new RegExp('([^\r\n,{}]+)(,(?=[^}]*{)|s*{)', 'g')
+    css = css.replace(re, function(g0, g1, g2) {
+        if (g1.match(/^\s*(@media|@keyframes|to|from|@font-face)/)) {
+            return g1 + g2
+        }
+
+        if (g1.match(/:host/)) {
+            g1 = g1.replace(/([^\s]*):host/, function(h0, h1) {
+                if (h1 === '') {
+                    return ''
+                }
+            })
+        }
+
+        if (g1.match(/:scope/)) {
+            g1 = g1.replace(/([^\s]*):scope/, function(h0, h1) {
+                if (h1 === '') {
+                    return '> *'
+                } else {
+                    return '> ' + h1
+                }
+            })
+        }
+
+        g1 = g1.replace(/^(\s*)/, '' + prefix + ' ')
+
+        return g1 + g2
+    })
+
+    return css
+}
+
+function initStyles(syleSheetElement, parent) {
+    if (!syleSheetElement || !parent) {
+        return
+    }
+
+    const parentTag = parent.tagName.toLowerCase()
+    
+    if (document.querySelector(`style[for=${parentTag}]`)) {
+        return
+    }
+
+    const head = document.head || document.getElementsByTagName('head')[0]
+    const newstyle = document.createElement('style')
+    newstyle.setAttribute('for', parentTag)
+
+    let csses = ''
+    csses = csses + cssScoper(syleSheetElement.innerHTML, parentTag)
+    
+    newstyle.appendChild(document.createTextNode(csses))
+
+    head.appendChild(newstyle)
+    return newstyle
+}
+
+
 // Simple base class that holds rendering logic
 class Component extends HTMLElement {
     constructor() {
         super()
         this.innerState
-        this.elementIndexString = 'ref'
     }
 
     get state() {
@@ -15,10 +72,6 @@ class Component extends HTMLElement {
         this.renderComponent()
     }
     
-    setState(update) {
-        this.state = update
-    }
-
     getCaretPosition (oField) {
         var iCaretPos = 0
     
@@ -33,12 +86,34 @@ class Component extends HTMLElement {
         
         return iCaretPos;
     }
-    
+
+    render() {
+        return ''
+    }
+
+    styles() {
+        return ''
+    }
+
+    renderStyles() {
+        if (this.scopedStyleSheetElement) {
+            return
+        }
+        this.styleSheetElement = document.createElement('style')
+        this.styleSheetElement.innerHTML = this.styles()
+        this.scopedStyleSheetElement = initStyles(this.styleSheetElement, this)
+    }
+
     renderComponent() {
         try {
-            // For inputs and textareas, get the current cursor position to refocus on re-render
-            const focusedElementRef = document.activeElement.attributes.ref && document.activeElement.attributes[this.elementIndexString].value
+            // Get the current cursor position to refocus on component render
             const selectionRange = this.getCaretPosition(document.activeElement)
+            let activeElement
+            this.querySelectorAll('*').forEach((element, index) => 
+                document.activeElement == element
+                    ? activeElement = index
+                    : null
+            )
             
             // Rerender html
             this.innerHTML = null
@@ -52,19 +127,32 @@ class Component extends HTMLElement {
             // etc
 
             // Bind value attributes
-            this.querySelectorAll('[innerHTML]').forEach(element => { element.innerHTML = element.attributes.innerHTML.value; element.removeAttribute('innerHTML') })
-            this.querySelectorAll('[innerText]').forEach(element => { element.innerText = element.attributes.innerText.value; element.removeAttribute('innerText') })
-            this.querySelectorAll('[value]').forEach(element => { element.value = element.attributes.value.value; element.removeAttribute('value') })
+            this.querySelectorAll('[innerHTML]').forEach(element => { 
+                element.innerHTML = element.attributes.innerHTML.value; 
+                element.removeAttribute('innerHTML') 
+            })
+            this.querySelectorAll('[innerText]').forEach(element => { 
+                element.innerText = element.attributes.innerText.value; 
+                element.removeAttribute('innerText') 
+            })
+            this.querySelectorAll('[value]').forEach(element => { 
+                element.value = element.attributes.value.value; 
+                element.removeAttribute('value') 
+            })
             //etc
 
-            // Add element references, trying to use this to refocus on input element when typed on
-            this.querySelectorAll('*').forEach((element, index) => element.setAttribute(this.elementIndexString, index.toString()))
-            
-            if (focusedElementRef) {
-                const lastFocused = this.querySelector(`[${this.elementIndexString}="${focusedElementRef}"]`)
+            // Refocus on previous element after render
+            if (activeElement) {
+                let lastFocused
+                this.querySelectorAll('*').forEach((element, index) => 
+                    index == activeElement
+                        ? lastFocused = element
+                        : null 
+                )
                 lastFocused.focus()
                 lastFocused.setSelectionRange(selectionRange, selectionRange)
             }
+            this.renderStyles()
         } catch (error) {
             console.log(error)
             return 
