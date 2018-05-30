@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<body>
-    <button>test</button>
-    <br>
-    <test-component></test-component>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.polyfill.io/v2/polyfill.js?features=Promise,CustomEvent"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
     
-    <script src="./component-base.js"></script>
-    <script src="./test-component.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.2.0/webcomponents-lite.js"></script>
+    
+    <script src="dist/index.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <test-component
+        test="original valule"
+    ></test-component>
+
+    <script>
+        let el = document.querySelector("test-component")
+
+        setTimeout(function(){
+            el.setAttribute("test", "new value")
+            console.log('esgetit')
+        }, 1000)
+    </script>
 </body>
 </html>
